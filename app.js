@@ -1,10 +1,11 @@
 /*
   待辦事項清單 - 應用邏輯
-  處理待辦事項的新增、刪除、完成狀態和本地存儲
+  處理待辦事項的新增、刪除、完成狀態、篩選、深色模式和本地存儲
 */
 
 // 常數定義
 const STORAGE_KEY = 'todo_list_data';
+const THEME_STORAGE_KEY = 'todo_app_theme';
 
 // 獲取 DOM 元素
 const todoInput = document.getElementById('todoInput');
@@ -12,9 +13,12 @@ const addBtn = document.getElementById('addBtn');
 const todoList = document.getElementById('todoList');
 const emptyState = document.getElementById('emptyState');
 const remainingCount = document.getElementById('remainingCount');
+const themeToggleBtn = document.getElementById('themeToggleBtn');
+const filterBtns = document.querySelectorAll('.filter-btn');
 
 // 待辦事項數據陣列
 let todos = [];
+let currentFilter = 'all'; // 'all', 'pending', 'completed'
 
 /**
  * 從 localStorage 載入待辦事項數據
@@ -126,41 +130,74 @@ function getUncompletedCount() {
 }
 
 /**
+ * 根據篩選條件取得需要顯示的待辦事項
+ */
+function getFilteredTodos() {
+    if (currentFilter === 'completed') {
+        return todos.filter(todo => todo.completed);
+    } else if (currentFilter === 'pending') {
+        return todos.filter(todo => !todo.completed);
+    }
+    // 'all' 或其他情況
+    return todos;
+}
+
+/**
+ * 取得篩選後為空時的提示文字
+ */
+function getEmptyStateMessage() {
+    if (todos.length === 0) {
+        return '沒有待辦事項，享受閒暇時光吧！';
+    }
+    
+    switch (currentFilter) {
+        case 'completed':
+            return '還沒完成任何事項呢';
+        case 'pending':
+            return '太好了！沒有未完成的事項';
+        default:
+            return '沒有待辦事項，享受閒暇時光吧！';
+    }
+}
+
+/**
  * 渲染待辦事項清單
  */
 function renderTodos() {
     // 清空現有的清單 HTML
     todoList.innerHTML = '';
 
-    // 如果沒有待辦事項，顯示空狀態
-    if (todos.length === 0) {
+    // 根據篩選條件取得待辦事項
+    const filteredTodos = getFilteredTodos();
+
+    // 如果篩選後沒有待辦事項，顯示空狀態
+    if (filteredTodos.length === 0) {
         emptyState.classList.add('show');
-        remainingCount.textContent = '剩餘: 0';
-        return;
+        const emptyText = emptyState.querySelector('.empty-text');
+        emptyText.textContent = getEmptyStateMessage();
+    } else {
+        emptyState.classList.remove('show');
+
+        // 遍歷每個篩選後的待辦事項並創建 DOM 元素
+        filteredTodos.forEach(todo => {
+            const li = document.createElement('li');
+            li.className = `todo-item ${todo.completed ? 'completed' : ''}`;
+            li.innerHTML = `
+                <input 
+                    type="checkbox" 
+                    class="todo-checkbox" 
+                    ${todo.completed ? 'checked' : ''}
+                    data-id="${todo.id}"
+                >
+                <span class="todo-text">${escapeHtml(todo.text)}</span>
+                <button class="delete-btn" data-id="${todo.id}">刪除</button>
+            `;
+
+            todoList.appendChild(li);
+        });
     }
 
-    // 隱藏空狀態
-    emptyState.classList.remove('show');
-
-    // 遍歷每個待辦事項並創建 DOM 元素
-    todos.forEach(todo => {
-        const li = document.createElement('li');
-        li.className = `todo-item ${todo.completed ? 'completed' : ''}`;
-        li.innerHTML = `
-            <input 
-                type="checkbox" 
-                class="todo-checkbox" 
-                ${todo.completed ? 'checked' : ''}
-                data-id="${todo.id}"
-            >
-            <span class="todo-text">${escapeHtml(todo.text)}</span>
-            <button class="delete-btn" data-id="${todo.id}">刪除</button>
-        `;
-
-        todoList.appendChild(li);
-    });
-
-    // 更新剩餘計數
+    // 更新剩餘計數（不受篩選影響，永遠顯示所有未完成的數量）
     const uncompletedCount = getUncompletedCount();
     remainingCount.textContent = `剩餘: ${uncompletedCount}`;
 
@@ -202,9 +239,102 @@ function escapeHtml(text) {
 }
 
 /**
+ * 初始化深色模式
+ * 優先級：用戶偏好設定 > 系統設定 > 淺色（預設）
+ */
+function initializeTheme() {
+    // 檢查用戶是否有保存的主題偏好
+    const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+    
+    if (savedTheme) {
+        // 使用用戶的保存偏好
+        setTheme(savedTheme);
+    } else {
+        // 檢查系統是否偏好深色模式
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            setTheme('dark');
+        } else {
+            setTheme('light');
+        }
+    }
+}
+
+/**
+ * 設置主題
+ */
+function setTheme(theme) {
+    const html = document.documentElement;
+    
+    if (theme === 'dark') {
+        html.setAttribute('data-theme', 'dark');
+        updateThemeButton('dark');
+    } else {
+        html.removeAttribute('data-theme');
+        updateThemeButton('light');
+    }
+    
+    // 保存用戶的選擇到 localStorage
+    localStorage.setItem(THEME_STORAGE_KEY, theme);
+}
+
+/**
+ * 更新深色模式按鈕的顯示
+ */
+function updateThemeButton(currentTheme) {
+    const icon = themeToggleBtn.querySelector('.theme-icon');
+    const text = themeToggleBtn.querySelector('.theme-text');
+    
+    if (currentTheme === 'dark') {
+        // 當前是深色，按鈕顯示淺色選項
+        icon.textContent = '☀️';
+        text.textContent = '淺色模式';
+    } else {
+        // 當前是淺色，按鈕顯示深色選項
+        icon.textContent = '🌙';
+        text.textContent = '深色模式';
+    }
+}
+
+/**
+ * 切換主題
+ */
+function toggleTheme() {
+    const html = document.documentElement;
+    const isDark = html.getAttribute('data-theme') === 'dark';
+    
+    if (isDark) {
+        setTheme('light');
+    } else {
+        setTheme('dark');
+    }
+}
+
+/**
+ * 設置篩選器
+ */
+function setFilter(filter) {
+    currentFilter = filter;
+    
+    // 更新篩選按鈕的樣式
+    filterBtns.forEach(btn => {
+        if (btn.dataset.filter === filter) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+    
+    // 重新渲染清單
+    renderTodos();
+}
+
+/**
  * 初始化應用
  */
 function initializeApp() {
+    // 初始化深色模式
+    initializeTheme();
+
     // 從本地存儲載入數據
     loadTodosFromStorage();
 
@@ -219,6 +349,16 @@ function initializeApp() {
         if (e.key === 'Enter') {
             addTodo();
         }
+    });
+
+    // 為深色模式按鈕綁定點擊事件
+    themeToggleBtn.addEventListener('click', toggleTheme);
+
+    // 為篩選按鈕綁定點擊事件
+    filterBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            setFilter(e.target.dataset.filter);
+        });
     });
 
     // 初始焦點設置

@@ -9,8 +9,14 @@
 <body>
     <div class="container">
         <div class="card">
-            <!-- 標題 -->
-            <h1 class="title">待辦事項</h1>
+            <!-- 標題和深色模式切換 -->
+            <div class="header-row">
+                <h1 class="title">待辦事項</h1>
+                <button id="themeToggleBtn" class="theme-toggle-btn" title="切換深色模式">
+                    <span class="theme-icon">🌙</span>
+                    <span class="theme-text">深色模式</span>
+                </button>
+            </div>
             
             <!-- 輸入區域 -->
             <div class="input-section">
@@ -22,6 +28,13 @@
                     autocomplete="off"
                 >
                 <button id="addBtn" class="add-btn">新增</button>
+            </div>
+
+            <!-- 篩選按鈕 -->
+            <div class="filter-section">
+                <button class="filter-btn active" data-filter="all">全部</button>
+                <button class="filter-btn" data-filter="pending">未完成</button>
+                <button class="filter-btn" data-filter="completed">已完成</button>
             </div>
 
             <!-- 待辦事項清單 -->

@@ -24,6 +24,25 @@
     --shadow-hover: 0 10px 15px rgba(0, 0, 0, 0.1);
 }
 
+/* 深色模式配色 */
+html[data-theme="dark"] {
+    --primary-color: #818cf8;
+    --primary-hover: #6366f1;
+    --success-color: #34d399;
+    --danger-color: #f87171;
+    --danger-hover: #ef5350;
+    
+    --bg-primary: #1f2937;
+    --bg-secondary: #111827;
+    --text-primary: #f3f4f6;
+    --text-secondary: #d1d5db;
+    --text-muted: #9ca3af;
+    
+    --border-color: #374151;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.2);
+    --shadow-hover: 0 10px 15px rgba(0, 0, 0, 0.4);
+}
+
 * {
     margin: 0;
     padding: 0;
@@ -36,6 +55,7 @@ html, body {
                  'Helvetica Neue', sans-serif;
     background-color: var(--bg-secondary);
     color: var(--text-primary);
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* 容器 */
@@ -56,27 +76,36 @@ html, body {
     border-radius: 12px;
     box-shadow: var(--shadow);
     padding: 32px 24px;
-    transition: box-shadow 0.3s ease;
+    transition: box-shadow 0.3s ease, background-color 0.3s ease;
 }
 
 .card:hover {
     box-shadow: var(--shadow-hover);
 }
 
+/* 標題列 */
+.header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    gap: 16px;
+}
+
 /* 標題 */
 .title {
     font-size: 28px;
     font-weight: 700;
-    margin-bottom: 24px;
-    text-align: center;
     color: var(--text-primary);
+    margin: 0;
+    flex: 1;
 }
 
 /* 輸入區域 */
 .input-section {
     display: flex;
     gap: 12px;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
 }
 
 .todo-input {
@@ -87,7 +116,7 @@ html, body {
     font-size: 16px;
     color: var(--text-primary);
     background-color: var(--bg-primary);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease, color 0.3s ease;
 }
 
 .todo-input:focus {
@@ -118,6 +147,71 @@ html, body {
 
 .add-btn:active {
     transform: scale(0.98);
+}
+
+/* 深色模式切換按鈕 */
+.theme-toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+    white-space: nowrap;
+}
+
+.theme-toggle-btn:hover {
+    background-color: var(--border-color);
+}
+
+.theme-toggle-btn:active {
+    transform: scale(0.95);
+}
+
+.theme-icon {
+    font-size: 18px;
+}
+
+/* 篩選按鈕區域 */
+.filter-section {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.filter-btn {
+    flex: 1;
+    padding: 10px 12px;
+    background-color: var(--bg-secondary);
+    color: var(--text-secondary);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.filter-btn.active {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.filter-btn.active:hover {
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
 }
 
 /* 待辦清單 */
@@ -247,14 +341,25 @@ html, body {
         padding: 24px 16px;
     }
 
+    .header-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
     .title {
         font-size: 24px;
-        margin-bottom: 20px;
+        margin-bottom: 0;
+    }
+
+    .theme-toggle-btn {
+        width: 100%;
+        justify-content: center;
     }
 
     .input-section {
         gap: 10px;
-        margin-bottom: 20px;
+        margin-bottom: 16px;
     }
 
     .todo-input {
@@ -265,6 +370,15 @@ html, body {
     .add-btn {
         padding: 10px 20px;
         font-size: 15px;
+    }
+
+    .filter-section {
+        gap: 8px;
+    }
+
+    .filter-btn {
+        padding: 9px 10px;
+        font-size: 13px;
     }
 }
 
@@ -280,14 +394,29 @@ html, body {
         border-radius: 10px;
     }
 
+    .header-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+
     .title {
         font-size: 22px;
-        margin-bottom: 16px;
+        margin-bottom: 0;
+    }
+
+    .theme-toggle-btn {
+        width: 100%;
+        justify-content: center;
+        padding: 10px 12px;
+        font-size: 13px;
     }
 
     .input-section {
         flex-direction: column;
         gap: 8px;
+        margin-bottom: 12px;
     }
 
     .todo-input {
@@ -299,6 +428,16 @@ html, body {
     .add-btn {
         width: 100%;
         padding: 12px 16px;
+    }
+
+    .filter-section {
+        gap: 6px;
+        margin-bottom: 20px;
+    }
+
+    .filter-btn {
+        padding: 8px 8px;
+        font-size: 12px;
     }
 
     .todo-item {
