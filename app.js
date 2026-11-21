@@ -146,17 +146,22 @@ function getFilteredTodos() {
  * 取得篩選後為空時的提示文字
  */
 function getEmptyStateMessage() {
+    // 如果根本沒有任何待辦事項
     if (todos.length === 0) {
         return '沒有待辦事項，享受閒暇時光吧！';
     }
     
+    // 根據不同的篩選條件顯示不同的提示文字
     switch (currentFilter) {
         case 'completed':
-            return '還沒完成任何事項呢';
+            // 在已完成篩選下為空，代表沒有已完成的項目
+            return '📭 目前沒有已完成的事項';
         case 'pending':
-            return '太好了！沒有未完成的事項';
+            // 在未完成篩選下為空，代表全部完成了
+            return '🎉 所有事項都完成了！';
         default:
-            return '沒有待辦事項，享受閒暇時光吧！';
+            // 全部篩選下為空，代表清單空的
+            return '😴 什麼都沒有';
     }
 }
 
