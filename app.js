@@ -15,6 +15,7 @@ const emptyState = document.getElementById('emptyState');
 const remainingCount = document.getElementById('remainingCount');
 const themeToggleBtn = document.getElementById('themeToggleBtn');
 const filterBtns = document.querySelectorAll('.filter-btn');
+const clearCompletedBtn = document.getElementById('clearCompletedBtn');
 
 // 待辦事項數據陣列
 let todos = [];
@@ -123,6 +124,46 @@ function toggleTodo(id) {
 }
 
 /**
+ * 刪除所有已完成的待辦事項
+ */
+function clearCompletedTodos() {
+    // 檢查是否有已完成的項目
+    const hasCompleted = todos.some(todo => todo.completed);
+    if (!hasCompleted) {
+        return; // 沒有已完成項目，直接返回
+    }
+
+    // 顯示確認對話框
+    if (confirm('確定要刪除所有已完成的待辦事項嗎？此操作無法撤銷。')) {
+        // 保留所有未完成的項目，刪除已完成的
+        todos = todos.filter(todo => !todo.completed);
+
+        // 保存到本地存儲
+        saveTodosToStorage();
+
+        // 重新渲染清單
+        renderTodos();
+    }
+}
+
+/**
+ * 更新「清除已完成」按鈕的顯示狀態
+ */
+function updateClearButtonState() {
+    // 檢查是否有已完成的項目
+    const hasCompleted = todos.some(todo => todo.completed);
+    
+    // 根據是否有已完成項目來顯示或隱藏按鈕
+    if (hasCompleted) {
+        clearCompletedBtn.hidden = false;
+        clearCompletedBtn.disabled = false;
+    } else {
+        clearCompletedBtn.hidden = true;
+        clearCompletedBtn.disabled = true;
+    }
+}
+
+/**
  * 計算未完成的待辦事項數量
  */
 function getUncompletedCount() {
@@ -205,6 +246,9 @@ function renderTodos() {
     // 更新剩餘計數（不受篩選影響，永遠顯示所有未完成的數量）
     const uncompletedCount = getUncompletedCount();
     remainingCount.textContent = `剩餘: ${uncompletedCount}`;
+
+    // 更新「清除已完成」按鈕的顯示狀態
+    updateClearButtonState();
 
     // 為新創建的複選框和刪除按鈕綁定事件監聽器
     attachEventListeners();
@@ -365,6 +409,9 @@ function initializeApp() {
             setFilter(e.target.dataset.filter);
         });
     });
+
+    // 為「清除已完成」按鈕綁定點擊事件
+    clearCompletedBtn.addEventListener('click', clearCompletedTodos);
 
     // 初始焦點設置
     todoInput.focus();
