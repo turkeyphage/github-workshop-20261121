@@ -1,0 +1,330 @@
+/* 
+  待辦事項清單 - 樣式表
+  顏色、佈局和響應式設計
+*/
+
+:root {
+    /* 主要顏色 */
+    --primary-color: #4f46e5;
+    --primary-hover: #4338ca;
+    --success-color: #10b981;
+    --danger-color: #ef4444;
+    --danger-hover: #dc2626;
+    
+    /* 背景和文字 */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f9fafb;
+    --text-primary: #111827;
+    --text-secondary: #6b7280;
+    --text-muted: #9ca3af;
+    
+    /* 邊框和陰影 */
+    --border-color: #e5e7eb;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.05);
+    --shadow-hover: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Noto Sans', 
+                 'Helvetica Neue', sans-serif;
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+/* 容器 */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 20px;
+    padding-top: 40px;
+}
+
+/* 卡片 */
+.card {
+    width: 100%;
+    max-width: 520px;
+    background-color: var(--bg-primary);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 32px 24px;
+    transition: box-shadow 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: var(--shadow-hover);
+}
+
+/* 標題 */
+.title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 24px;
+    text-align: center;
+    color: var(--text-primary);
+}
+
+/* 輸入區域 */
+.input-section {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.todo-input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 16px;
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.todo-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.todo-input::placeholder {
+    color: var(--text-muted);
+}
+
+.add-btn {
+    padding: 12px 24px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.add-btn:hover {
+    background-color: var(--primary-hover);
+}
+
+.add-btn:active {
+    transform: scale(0.98);
+}
+
+/* 待辦清單 */
+.todo-list {
+    list-style: none;
+    margin-bottom: 24px;
+    min-height: 24px;
+}
+
+.todo-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background-color: var(--bg-secondary);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.todo-item:last-child {
+    margin-bottom: 0;
+}
+
+.todo-item:hover {
+    background-color: #f3f4f6;
+}
+
+/* 複選框 */
+.todo-checkbox {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    cursor: pointer;
+    accent-color: var(--success-color);
+}
+
+/* 待辦文字 */
+.todo-text {
+    flex: 1;
+    color: var(--text-primary);
+    word-break: break-word;
+    transition: color 0.2s ease, text-decoration 0.2s ease;
+}
+
+/* 已完成狀態 */
+.todo-item.completed .todo-text {
+    text-decoration: line-through;
+    color: var(--text-muted);
+}
+
+/* 刪除按鈕 */
+.delete-btn {
+    padding: 6px 12px;
+    background-color: transparent;
+    color: var(--danger-color);
+    border: 1px solid var(--danger-color);
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.delete-btn:hover {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.delete-btn:active {
+    transform: scale(0.95);
+}
+
+/* 空狀態 */
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    display: none;
+}
+
+.empty-state.show {
+    display: block;
+}
+
+.empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.empty-text {
+    font-size: 18px;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* 底部統計 */
+.footer {
+    text-align: center;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-color);
+}
+
+.remaining-count {
+    font-size: 16px;
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+/* 響應式設計 - 平板 */
+@media (max-width: 768px) {
+    .container {
+        padding: 16px;
+        padding-top: 24px;
+    }
+
+    .card {
+        padding: 24px 16px;
+    }
+
+    .title {
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    .input-section {
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .todo-input {
+        font-size: 16px;
+        padding: 10px 14px;
+    }
+
+    .add-btn {
+        padding: 10px 20px;
+        font-size: 15px;
+    }
+}
+
+/* 響應式設計 - 手機 */
+@media (max-width: 480px) {
+    .container {
+        padding: 12px;
+        padding-top: 16px;
+    }
+
+    .card {
+        padding: 20px 12px;
+        border-radius: 10px;
+    }
+
+    .title {
+        font-size: 22px;
+        margin-bottom: 16px;
+    }
+
+    .input-section {
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .todo-input {
+        width: 100%;
+        padding: 12px 14px;
+        font-size: 16px;
+    }
+
+    .add-btn {
+        width: 100%;
+        padding: 12px 16px;
+    }
+
+    .todo-item {
+        padding: 12px;
+        gap: 10px;
+    }
+
+    .todo-text {
+        font-size: 15px;
+    }
+
+    .delete-btn {
+        padding: 5px 10px;
+        font-size: 12px;
+    }
+
+    .empty-icon {
+        font-size: 40px;
+        margin-bottom: 12px;
+    }
+
+    .empty-text {
+        font-size: 16px;
+    }
+
+    .remaining-count {
+        font-size: 14px;
+    }
+}
