@@ -6,6 +6,7 @@
 // 常數定義
 const STORAGE_KEY = 'todo_list_data';
 const THEME_STORAGE_KEY = 'todo_app_theme';
+const FILTER_STORAGE_KEY = 'todo_app_filter';
 
 // 獲取 DOM 元素
 const todoInput = document.getElementById('todoInput');
@@ -359,10 +360,44 @@ function toggleTheme() {
 }
 
 /**
+ * 從 localStorage 載入篩選條件
+ */
+function loadFilterFromStorage() {
+    try {
+        const savedFilter = localStorage.getItem(FILTER_STORAGE_KEY);
+        
+        // 驗證儲存的篩選條件是否有效
+        if (savedFilter && ['all', 'pending', 'completed'].includes(savedFilter)) {
+            currentFilter = savedFilter;
+        } else {
+            // 如果無效，回退到「全部」
+            currentFilter = 'all';
+        }
+    } catch (error) {
+        console.error('讀取篩選條件失敗:', error);
+        currentFilter = 'all';
+    }
+}
+
+/**
+ * 將篩選條件保存到 localStorage
+ */
+function saveFilterToStorage() {
+    try {
+        localStorage.setItem(FILTER_STORAGE_KEY, currentFilter);
+    } catch (error) {
+        console.error('保存篩選條件失敗:', error);
+    }
+}
+
+/**
  * 設置篩選器
  */
 function setFilter(filter) {
     currentFilter = filter;
+    
+    // 保存篩選條件到 localStorage
+    saveFilterToStorage();
     
     // 更新篩選按鈕的樣式
     filterBtns.forEach(btn => {
@@ -386,6 +421,18 @@ function initializeApp() {
 
     // 從本地存儲載入數據
     loadTodosFromStorage();
+
+    // 從本地存儲載入篩選條件
+    loadFilterFromStorage();
+
+    // 更新篩選按鈕的樣式
+    filterBtns.forEach(btn => {
+        if (btn.dataset.filter === currentFilter) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
 
     // 初始渲染
     renderTodos();
